@@ -1,5 +1,9 @@
 //GLOBAL VARIABLES
 PlayerLook = "right";
+Floor1Collide = false;
+Floor2Collide = true;
+Floor3Collide = false;
+var bulletTime = 0;
 
 
 function SetupWorld()
@@ -48,6 +52,30 @@ function SetupPlayer()
        player.anchor.setTo(0.5, 0.5); 
 }
 
+
+function SetupControls()
+{  
+     // Variable to store the arrow key pressed
+      cursor = game.input.keyboard.createCursorKeys();      
+     spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);         
+}
+
+
+function SetupBullets()
+{
+     bullets.enableBody = true;
+    bullets.createMultiple(10, 'pipe');
+    bullets.callAll('events.onOutOfBounds.add', 'events.onOutOfBounds', resetBullet, this);
+    bullets.setAll('checkWorldBounds', true);
+    
+}
+
+
+//  Called if the bullet goes out of the screen
+function resetBullet (bullet) {
+    bullet.kill();
+}
+
 // Create our 'main' state that will contain the game
 var mainState = {
     preload: function () {
@@ -65,13 +93,12 @@ var mainState = {
         
     }, create: function () {
         
-        // Create an empty group
+        // Create  groups
         floor1 = game.add.group();
         floor2 = game.add.group();
         floor3 = game.add.group();
+        bullets = game.add.group();
         
-        // Variable to store the arrow key pressed
-        this.cursor = game.input.keyboard.createCursorKeys();
         
         // Change the background color of the game to blue
         game.stage.backgroundColor = 'black';
@@ -88,6 +115,12 @@ var mainState = {
 
         SetupWorld();    
         SetupPlayer();
+        SetupControls();
+        SetupBullets();
+        
+        
+        //DEBUG
+        this.debugText1 = game.add.text(600, 20, "Test", { font: "16px Arial", fill: "#ffffff", align: "center" });
                 
 
         
@@ -96,26 +129,44 @@ var mainState = {
     , update: function () {
         // This function is called 60 times per second    
         // It contains the game's logic   
-         game.physics.arcade.collide( player, floor2, this.hitGround, null, this);  
+          game.physics.arcade.collide( player, floor1, this.hitGround, function() { 
+             if (Floor1Collide) {  return true;  }  return false; }, this);  
         
-        if(this.cursor.left.isDown && player.body.touching.down)
+         game.physics.arcade.collide( player, floor2, this.hitGround, function() { 
+             if (Floor2Collide) {  return true;  }  return false; }, this);  
+        
+         game.physics.arcade.collide( player, floor3, this.hitGround, function() { 
+             if (Floor3Collide) {  return true;  }  return false; }, this); 
+        
+        if(cursor.left.isDown && player.body.touching.down)
             {
                 player.angle = -180;    
                 PlayerLook = "left";
             }
         
-         if (this.cursor.right.isDown && player.body.touching.down)
+         if (cursor.right.isDown && player.body.touching.down)
             {
-                 player.angle = 0; 
-                
+                 player.angle = 0;                
                 PlayerLook = "right";
             }
         
-        if (this.cursor.up.isDown && player.body.touching.down) 
+          if (cursor.down.isDown && player.body.touching.down)
+            {
+               if(Floor1Collide){ Floor1Collide = false; Floor2Collide = true;}
+               else if(Floor2Collide){Floor2Collide = false; Floor3Collide = true};
+            }
+        
+        
+           if (spaceKey.isDown)
+                this.ShootWeapon();
+      
+        
+        
+        
+        if (cursor.up.isDown && player.body.touching.down)     
             {
                 player.body.velocity.y = -1350;
-                
-                
+                                
                 if(PlayerLook == "right")
                     game.add.tween(player).to({angle: -20}, 100).start(); 
         
@@ -124,22 +175,61 @@ var mainState = {
                     game.add.tween(player).to({angle: -160}, 100).start();   
                 
                 
-                this.jumpSound.play();                 
+               // this.jumpSound.play();   
+                
+                if(Floor2Collide)
+                    {
+                        setTimeout(function(){
+                            Floor1Collide = true; Floor2Collide = false;
+                        }, 300);                         
+                    }      
+                
+                if(Floor3Collide)
+                    {
+                        setTimeout(function(){
+                            Floor2Collide = true; Floor3Collide = false;
+                        }, 300);                         
+                    } 
             }
-    
     }
     , 
         hitGround: function()
     {
          if(PlayerLook == "right")
-             game.add.tween(player).to({angle: 0}, 25).start(); 
+             game.add.tween(player).to({angle: 0}, 20).start(); 
         
                  if(PlayerLook == "left")
-             game.add.tween(player).to({angle: -180}, 25).start(); 
+             game.add.tween(player).to({angle: -180}, 20).start(); 
     },
     
+ShootWeapon: function()
+    {
+        
+                   this.debugText1.text = "Space bar pressed";
+            if (game.time.now > bulletTime)
+    {
+        bullet = bullets.getFirstExists(false);
 
-
+        if (bullet)
+        {
+            if (PlayerLook == "right")
+                {
+                    bullet.reset(player.x + 6, player.y - 8);
+                    bullet.body.velocity.x = 600;
+                    bulletTime = game.time.now + 350;
+                }
+            
+                        if (PlayerLook == "left")
+                {
+                    bullet.reset(player.x - 6 , player.y - 8);
+                    bullet.body.velocity.x = -600;
+                    bulletTime = game.time.now + 350;
+                }
+        }
+    }
+          
+    },
+            
 
 
     
