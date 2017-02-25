@@ -1,8 +1,5 @@
-
-
-
 //GLOBAL VARIABLES
-
+PlayerLook = "right";
 
 
 function SetupWorld()
@@ -83,6 +80,8 @@ var mainState = {
         // Add the physics engine to all game objects
         game.world.enableBody = true;
         
+        //Add sound to game 
+        this.jumpSound = game.add.audio('jump'); 
        
 
         SetupWorld();    
@@ -95,27 +94,45 @@ var mainState = {
     , update: function () {
         // This function is called 60 times per second    
         // It contains the game's logic   
-         game.physics.arcade.collide( player, pipes, this.hitPipe, null, this);  
+         game.physics.arcade.collide( player, pipes, this.hitGround, null, this);  
         
+        if(this.cursor.left.isDown)
+            {
+                player.angle = -180;    
+                PlayerLook = "left";
+            }
+        
+         if (this.cursor.right.isDown)
+            {
+                 player.angle = 0; 
+                
+                PlayerLook = "right";
+            }
         
         if (this.cursor.up.isDown && player.body.touching.down) 
             {
-                player.body.velocity.y = -350;
-                   game.add.tween(player).to({angle: -20}, 100).start(); 
-        
-                if (this.cursor.left.isDown) 
-                game.add.tween(player).to({angle: 20}, 100).start();    
+                player.body.velocity.y = -450;
                 
+                if(PlayerLook == "right")
+                    game.add.tween(player).to({angle: -20}, 100).start(); 
+        
+
+                if(PlayerLook == "left")
+                    game.add.tween(player).to({angle: -160}, 100).start();   
+                
+                
+                this.jumpSound.play();                 
             }
-        
-        
-        
+    
     }
     , 
-        hitPipe: function()
+        hitGround: function()
     {
+         if(PlayerLook == "right")
+             game.add.tween(player).to({angle: 0}, 25).start(); 
         
-         game.add.tween(player).to({angle: 0}, 25).start(); 
+                 if(PlayerLook == "left")
+             game.add.tween(player).to({angle: -180}, 25).start(); 
     },
     
 
