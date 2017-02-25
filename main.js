@@ -40,7 +40,7 @@ function SetupWorld()
 
 function SetupPlayer()
 {
-       player = game.add.sprite(innerWidth/2 , 185, 'bird');
+       player = game.add.sprite(innerWidth/2 , 185, 'cat');
         
 
         // Add gravity to the bird to make it fall
@@ -85,6 +85,7 @@ var mainState = {
         // Load the bird sprite
         game.load.image('bird', 'assets/bird.png');
         game.load.image('pipe', 'assets/pipe.png');
+        game.load.image('cat', 'assets/cat.png');
         
         //Load Sound
         game.load.audio('jump', 'assets/jump.wav'); 
@@ -122,8 +123,6 @@ var mainState = {
         //DEBUG
         this.debugText1 = game.add.text(600, 20, "Test", { font: "16px Arial", fill: "#ffffff", align: "center" });
                 
-
-        
         
      }
     , update: function () {
