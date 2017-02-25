@@ -10,7 +10,7 @@ function SetupWorld()
             {                                             
                  var pipe = game.add.sprite(i, innerHeight/2 + 200, 'pipe');
                 pipe.body.immovable = true;
-                pipes.add(pipe);             
+                floor3.add(pipe);             
                 
             }
     
@@ -19,7 +19,7 @@ function SetupWorld()
             {                                             
                  var pipe = game.add.sprite(i, innerHeight/2 + 50 , 'pipe');
                  pipe.body.immovable = true;
-                pipes.add(pipe);             
+                floor2.add(pipe);             
                 
             }
     
@@ -28,7 +28,7 @@ function SetupWorld()
             {                                             
                  var pipe = game.add.sprite(i, innerHeight/2 - 100, 'pipe');
                  pipe.body.immovable = true;
-                pipes.add(pipe);             
+                floor1.add(pipe);             
                 
             }
 }
@@ -36,14 +36,14 @@ function SetupWorld()
 
 function SetupPlayer()
 {
-       player = game.add.sprite(innerWidth/2, 185, 'bird');
+       player = game.add.sprite(innerWidth/2 , 185, 'bird');
         
 
         // Add gravity to the bird to make it fall
-        player.body.gravity.y = 1000;
+        player.body.gravity.y = 5000;
     
     
-        // Move the anchor to the left and downward
+        // Move the anchor to the left and rd
       //  game.bird.anchor.setTo(-0.2, 0.5); 
        player.anchor.setTo(0.5, 0.5); 
 }
@@ -66,7 +66,9 @@ var mainState = {
     }, create: function () {
         
         // Create an empty group
-        pipes = game.add.group();
+        floor1 = game.add.group();
+        floor2 = game.add.group();
+        floor3 = game.add.group();
         
         // Variable to store the arrow key pressed
         this.cursor = game.input.keyboard.createCursorKeys();
@@ -94,15 +96,15 @@ var mainState = {
     , update: function () {
         // This function is called 60 times per second    
         // It contains the game's logic   
-         game.physics.arcade.collide( player, pipes, this.hitGround, null, this);  
+         game.physics.arcade.collide( player, floor2, this.hitGround, null, this);  
         
-        if(this.cursor.left.isDown)
+        if(this.cursor.left.isDown && player.body.touching.down)
             {
                 player.angle = -180;    
                 PlayerLook = "left";
             }
         
-         if (this.cursor.right.isDown)
+         if (this.cursor.right.isDown && player.body.touching.down)
             {
                  player.angle = 0; 
                 
@@ -111,7 +113,8 @@ var mainState = {
         
         if (this.cursor.up.isDown && player.body.touching.down) 
             {
-                player.body.velocity.y = -450;
+                player.body.velocity.y = -1350;
+                
                 
                 if(PlayerLook == "right")
                     game.add.tween(player).to({angle: -20}, 100).start(); 
