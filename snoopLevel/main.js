@@ -54,6 +54,7 @@ function KillEnemy(bullet, trump) {
    
     destroyGroup.add(trump);
     destroyGroup.add(bullet);
+    trump.animations.stop();
     trump.body.gravity.y = 0;
     
     bullet.tween.pause(); 
@@ -73,6 +74,9 @@ var mainState = {
         game.load.image('hill', 'assets/hill.png');
         game.load.image('castle', 'assets/castle.png');
         game.load.image('putin', 'assets/putin.png');
+        game.load.spritesheet('mlg', 'assets/mlg.png', 200, 133);
+        game.load.spritesheet('mlg2', 'assets/mlg2.png', 177, 133);
+        game.load.spritesheet('mlg3', 'assets/mlg3.png', 63, 133);
         
         
         //Load Sound
@@ -80,6 +84,7 @@ var mainState = {
         game.load.audio('thwomp', 'assets/sound/thwomp.wav');
         game.load.audio('throw', 'assets/sound/throw.wav');
         game.load.audio('punch', 'assets/sound/punch.mp3');
+        game.load.audio('snoop', 'assets/sound/snoop.mp3');
            
     }, create: function () {
         
@@ -105,7 +110,11 @@ var mainState = {
         thwompSound = game.add.audio('thwomp'); 
         this.throwSound = game.add.audio('throw'); 
         punchSound = game.add.audio('punch'); 
+        snoopMusic = game.add.audio('snoop'); 
        
+        snoopMusic.play();
+        
+        
         SetupWorld();    
         SetupPlayer();
         SetupControls();
@@ -114,9 +123,16 @@ var mainState = {
         game.world.sendToBack(trumps);
         game.world.bringToTop(bullets);  
         
-        this.timer = game.time.events.loop(1000, SetupEnemies, { this: this, enemy: "trump" , speed: 350 });
-        game.time.events.loop(4123, SetupEnemies, { this: this, enemy: "hill", speed: 400 });
-        game.time.events.loop(5000, SetupEnemies, { this: this, enemy: "putin", speed: 200 });
+     // this.timer = game.time.events.loop(1000, SetupEnemies, { this: this, enemy: "trump" , speed: 350 });
+     // game.time.events.loop(4123, SetupEnemies, { this: this, enemy: "hill", speed: 400 });
+      // game.time.events.loop(5000, SetupEnemies, { this: this, enemy: "putin", speed: 200 });
+        
+        
+       game.time.events.loop(5000, SetupEnemies, { this: this, enemy: "mlg", speed: 150 });
+        // game.time.events.loop(1000, SetupEnemies, { this: this, enemy: "mlg2", speed: 200 });
+        game.time.events.loop(1500, SetupEnemies, { this: this, enemy: "mlg3", speed: 200 });
+        
+       game.time.events.loop(1000, SetupEnemies, { this: this, enemy: "mlg3", speed: 200 });
         
         //DEBUG
         this.scoreText = game.add.text(innerWidth - 350, 20, "Score: 0", { font: "64px Arial", fill: "#ffffff", align: "center" });
@@ -168,14 +184,18 @@ var mainState = {
         
         if(cursor.left.isDown )
             {
+                
                 player.scale.x = -1;
                 PlayerLook = "left";
+                 this.ShootWeapon();
             }
         
          if (cursor.right.isDown )
             {  
+                
                 player.scale.x = 1;
                 PlayerLook = "right";
+                 this.ShootWeapon();
             }
         
           if (cursor.down.isDown && player.body.touching.down)

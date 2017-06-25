@@ -81,7 +81,7 @@ function SetupEnemies() {
 
 
 function CreateTrump(x, y, direction, enemy, speed)
-{
+{  
     if (direction == "left") {
         trump = game.add.sprite(x, y, enemy);
         trump.anchor.setTo(0.5, 0.5);
@@ -97,4 +97,17 @@ function CreateTrump(x, y, direction, enemy, speed)
         trump.scale.x = -1;
         trumps.add(trump);
     }
+        if (enemy == 'mlg') {
+            trump.animations.add('run');
+            trump.animations.play('run', 15, true);
+        }
+        if (enemy == 'mlg2') {
+            trump.animations.add('run');
+            trump.animations.play('run', 30, true);
+        }
+    
+            if (enemy == 'mlg3') {
+            trump.animations.add('run');
+            trump.animations.play('run', 15, true);
+        }
 }
